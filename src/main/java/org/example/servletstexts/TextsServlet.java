@@ -17,6 +17,7 @@ public class TextsServlet extends HttpServlet {
     private int currentId = 1;
     private final HashMap<Integer, String> texts = new HashMap<>();
     private ObjectMapper objectMapper = new ObjectMapper();
+    private static final String MESSAGE_INTERNAL_SERVER_ERROR = "Internal Server Error";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -35,7 +36,7 @@ public class TextsServlet extends HttpServlet {
             }
         } catch (IOException e1) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Internal server error");
+            resp.getWriter().write(MESSAGE_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -57,7 +58,7 @@ public class TextsServlet extends HttpServlet {
             }
         } catch (IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Internal server error");
+            resp.getWriter().write(MESSAGE_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -85,13 +86,13 @@ public class TextsServlet extends HttpServlet {
             }
         } catch (IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Internal server error");
+            resp.getWriter().write(MESSAGE_INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void responseProcessForDoGetMethod(String id_string, PrintWriter respWriter, HttpServletResponse response) {
+    private void responseProcessForDoGetMethod(String idString, PrintWriter respWriter, HttpServletResponse response) {
         try {
-            int id = Integer.parseInt(id_string);
+            int id = Integer.parseInt(idString);
             getTextById(id, respWriter, response);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -99,23 +100,13 @@ public class TextsServlet extends HttpServlet {
         }
     }
 
-    private void responseProcessForDeleteMethod(String id_string, PrintWriter respWriter, HttpServletResponse response) {
+    private void responseProcessForDeleteMethod(String idString, PrintWriter respWriter, HttpServletResponse response) {
         try {
-            int id = Integer.parseInt(id_string);
+            int id = Integer.parseInt(idString);
             deleteTextById(id, respWriter, response);
         } catch (NumberFormatException numberFormatException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             respWriter.write("Invalid format");
-
-        }
-    }
-
-    private void deleteTextById(int id, PrintWriter respWriter, HttpServletResponse response) {
-        if (texts.remove(id) != null) {
-            respWriter.write("Text with id " + id + " has been deleted");
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            respWriter.write("Text with id " + id + " not found");
         }
     }
 
@@ -126,6 +117,15 @@ public class TextsServlet extends HttpServlet {
         } else {
             respWriter.write("Text with id " + id + " not found");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void deleteTextById(int id, PrintWriter respWriter, HttpServletResponse response) {
+        if (texts.remove(id) != null) {
+            respWriter.write("Text with id " + id + " has been deleted");
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            respWriter.write("Text with id " + id + " not found");
         }
     }
 
