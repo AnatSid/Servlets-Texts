@@ -69,7 +69,6 @@ public class TextsServlet extends HttpServlet {
                             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                             respWriter.write("Text with id " + id + " not found");
                         }
-
                     } catch (NumberFormatException e) {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         respWriter.write("Invalid format");
@@ -109,7 +108,6 @@ public class TextsServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("Internal server error");
         }
-
     }
 
 }
