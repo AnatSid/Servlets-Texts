@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-@WebServlet(name = "textsServlet", value = "/texts/*")
+@WebServlet(name = "texts-servlet", value = "/texts/*")
 public class TextsServlet extends HttpServlet {
 
     private int currentId = 1;
@@ -27,19 +27,7 @@ public class TextsServlet extends HttpServlet {
             } else {
                 String[] pathParts = pathInfo.split("/");
                 if (pathParts.length == 2) {
-                    try {
-                        int id = Integer.parseInt(pathParts[1]);
-                        String text = texts.get(id);
-                        if (text != null) {
-                            respWriter.write("Text with id " + id + ": " + text);
-                        } else {
-                            respWriter.write("Text with id " + id + " not found");
-                            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                        }
-                    } catch (NumberFormatException e) {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        respWriter.write("Invalid id format");
-                    }
+                    responseProcessForDoGetMethod(pathParts[1], respWriter, resp);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     respWriter.write("Invalid request path. You entered an extra '/'");
@@ -60,19 +48,8 @@ public class TextsServlet extends HttpServlet {
                 respWriter.write("All text has been deleted");
             } else {
                 String[] pathParts = pathInfo.split("/");
-                if (pathParts.length == 2) {
-                    try {
-                        int id = Integer.parseInt(pathParts[1]);
-                        if (texts.remove(id) != null) {
-                            respWriter.write("Text with id " + id + " has been deleted");
-                        } else {
-                            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            respWriter.write("Text with id " + id + " not found");
-                        }
-                    } catch (NumberFormatException e) {
-                        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        respWriter.write("Invalid format");
-                    }
+                if (pathParts.length == 2 && !pathParts[1].isEmpty()) {
+                    responseProcessForDeleteMethod(pathParts[1], respWriter, resp);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     respWriter.write("Invalid request path. You entered an extra '/'");
@@ -94,11 +71,13 @@ public class TextsServlet extends HttpServlet {
 
             if (text != null && !text.trim().isEmpty()) {
                 texts.put(currentId, text);
+
                 ObjectNode responseBody = objectMapper.createObjectNode();
                 responseBody.put("text", text);
                 responseBody.put("message", "Text saved with id: " + currentId);
                 responseBody.put("textId", currentId);
                 respWriter.write(responseBody.toString());
+
                 currentId++;
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -107,6 +86,46 @@ public class TextsServlet extends HttpServlet {
         } catch (IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("Internal server error");
+        }
+    }
+
+    private void responseProcessForDoGetMethod(String id_string, PrintWriter respWriter, HttpServletResponse response) {
+        try {
+            int id = Integer.parseInt(id_string);
+            getTextById(id, respWriter, response);
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            respWriter.write("Invalid id format");
+        }
+    }
+
+    private void responseProcessForDeleteMethod(String id_string, PrintWriter respWriter, HttpServletResponse response) {
+        try {
+            int id = Integer.parseInt(id_string);
+            deleteTextById(id, respWriter, response);
+        } catch (NumberFormatException numberFormatException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            respWriter.write("Invalid format");
+
+        }
+    }
+
+    private void deleteTextById(int id, PrintWriter respWriter, HttpServletResponse response) {
+        if (texts.remove(id) != null) {
+            respWriter.write("Text with id " + id + " has been deleted");
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            respWriter.write("Text with id " + id + " not found");
+        }
+    }
+
+    private void getTextById(int id, PrintWriter respWriter, HttpServletResponse response) {
+        String text = texts.get(id);
+        if (text != null) {
+            respWriter.write("Text with id " + id + ": " + text);
+        } else {
+            respWriter.write("Text with id " + id + " not found");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
