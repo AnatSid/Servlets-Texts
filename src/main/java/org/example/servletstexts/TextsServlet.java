@@ -1,7 +1,7 @@
 package org.example.servletstexts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +40,9 @@ public class TextsServlet extends HttpServlet {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         respWriter.write("Invalid id format");
                     }
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    respWriter.write("Invalid request path. You entered an extra '/'");
                 }
             }
         } catch (IOException e1) {
@@ -49,7 +52,7 @@ public class TextsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try (PrintWriter respWriter = resp.getWriter()) {
             String pathInfo = req.getPathInfo();
             if (pathInfo.equals("/deleteAll")) {
@@ -71,6 +74,9 @@ public class TextsServlet extends HttpServlet {
                         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         respWriter.write("Invalid format");
                     }
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    respWriter.write("Invalid request path. You entered an extra '/'");
                 }
             }
         } catch (IOException e) {
@@ -81,11 +87,19 @@ public class TextsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+
         try (PrintWriter respWriter = resp.getWriter()) {
-            String text = req.getReader().readLine();
+            ObjectNode requestBody = objectMapper.readValue(req.getReader(), ObjectNode.class);
+            String text = requestBody.get("text").asText();
+
             if (text != null && !text.trim().isEmpty()) {
                 texts.put(currentId, text);
-                respWriter.write("Text \"" + text + "\" saved under id = " + currentId);
+                ObjectNode responseBody = objectMapper.createObjectNode();
+                responseBody.put("text", text);
+                responseBody.put("message", "Text saved with id: " + currentId);
+                responseBody.put("textId", currentId);
+                respWriter.write(responseBody.toString());
                 currentId++;
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -97,4 +111,5 @@ public class TextsServlet extends HttpServlet {
         }
 
     }
+
 }
