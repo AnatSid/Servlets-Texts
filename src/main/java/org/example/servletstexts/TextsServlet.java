@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.servletstexts.exception.BadRequestException;
 import org.example.servletstexts.exception.InternalServerErrorException;
+import org.example.servletstexts.exception.NotFoundException;
 
 
 import java.io.IOException;
@@ -29,7 +30,8 @@ public class TextsServlet extends BaseServlet {
 
     @Override
     protected void handleGet(HttpServletRequest req, HttpServletResponse resp) {
-        try (PrintWriter respWriter = resp.getWriter()) {
+        try {
+            PrintWriter respWriter = resp.getWriter();
             String pathInfo = req.getPathInfo();
             if (pathInfo == null || pathInfo.equals("/")) {
                 respWriter.write(texts.toString());
@@ -41,18 +43,19 @@ public class TextsServlet extends BaseServlet {
                     throw new BadRequestException(INVALID_REQUEST_PATH + " You entered an extra '/'");
                 }
             }
-        } catch (IOException e1) {
+        } catch (IOException ex) {
             throw new InternalServerErrorException(INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     protected void handleDelete(HttpServletRequest req, HttpServletResponse resp) {
-        try (PrintWriter respWriter = resp.getWriter()) {
+        try {
+            PrintWriter respWriter = resp.getWriter();
             String pathInfo = req.getPathInfo();
             if (pathInfo.equals("/deleteAll")) {
                 texts.clear();
-                currentId = 0;
+                currentId = 1;
                 respWriter.write("All text has been deleted");
             } else {
                 String[] pathParts = pathInfo.split("/");
@@ -71,7 +74,8 @@ public class TextsServlet extends BaseServlet {
     protected void handlePost(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("application/json");
 
-        try (PrintWriter respWriter = resp.getWriter()) {
+        try {
+            PrintWriter respWriter = resp.getWriter();
             ObjectNode requestBody = objectMapper.readValue(req.getReader(), ObjectNode.class);
             String text = requestBody.get("text").asText();
 
@@ -101,7 +105,7 @@ public class TextsServlet extends BaseServlet {
             if (texts.remove(textId) != null) {
                 resp.getWriter().write("Text with id " + textId + " has been deleted");
             } else {
-                throw new BadRequestException(TEXT_NOT_FOUND + " with id " + textId);
+                throw new NotFoundException(TEXT_NOT_FOUND + " with id " + textId);
             }
         } catch (NumberFormatException e) {
             throw new BadRequestException(INVALID_FORMAT);
@@ -115,7 +119,7 @@ public class TextsServlet extends BaseServlet {
             if (text != null) {
                 resp.getWriter().write("Text with id " + textId + ": " + text);
             } else {
-                throw new BadRequestException(TEXT_NOT_FOUND + " with id " + textId);
+                throw new NotFoundException(TEXT_NOT_FOUND + " with id " + textId);
             }
         } catch (NumberFormatException e) {
             throw new BadRequestException(INVALID_FORMAT);
