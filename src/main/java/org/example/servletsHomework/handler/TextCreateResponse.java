@@ -1,9 +1,10 @@
-package org.example.servletstexts.handlers;
+package org.example.servletsHomework.handler;
 
 public class TextCreateResponse {
     private String text;
     private String message;
-    private int textId;
+    private long textId;
+
 
 
     public void setText(String text) {
@@ -14,7 +15,7 @@ public class TextCreateResponse {
         this.message = message;
     }
 
-    public void setTextId(int textId) {
+    public void setTextId(long textId) {
         this.textId = textId;
     }
 
@@ -26,7 +27,8 @@ public class TextCreateResponse {
         return message;
     }
 
-    public int getTextId() {
+    public long getTextId() {
         return textId;
     }
+
 }

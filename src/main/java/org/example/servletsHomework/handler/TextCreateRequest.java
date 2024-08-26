@@ -1,4 +1,4 @@
-package org.example.servletstexts.handlers;
+package org.example.servletsHomework.handler;
 
 public class TextCreateRequest {
 
@@ -7,7 +7,6 @@ public class TextCreateRequest {
     public void setText(String text) {
         this.text = text;
     }
-
     public String getText() {
         return text;
     }

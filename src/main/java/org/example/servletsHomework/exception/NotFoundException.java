@@ -1,4 +1,4 @@
-package org.example.servletstexts.exception;
+package org.example.servletsHomework.exception;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException(String message) {

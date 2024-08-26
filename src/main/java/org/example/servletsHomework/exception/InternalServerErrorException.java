@@ -1,4 +1,4 @@
-package org.example.servletstexts.exception;
+package org.example.servletsHomework.exception;
 
 public class InternalServerErrorException extends RuntimeException{
     public InternalServerErrorException(String message) {
