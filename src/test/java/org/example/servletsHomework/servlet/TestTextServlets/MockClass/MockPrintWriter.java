@@ -18,9 +18,6 @@ public class MockPrintWriter extends PrintWriter {
         super.write(s);
     }
 
-    public void clearWrittenStrings() {
-        writtenStrings.clear();
-    }
 
     public List<String> getWrittenStrings() {
         return writtenStrings;

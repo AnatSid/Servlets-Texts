@@ -20,10 +20,10 @@ public abstract class BaseServlet extends HttpServlet {
 
     private static final Map<Class<? extends Exception>, Integer> EXCEPTIONS_AND_STATUS_MAP =
             Map.of(
-            BadRequestException.class, HttpServletResponse.SC_BAD_REQUEST,
-            NotFoundException.class, HttpServletResponse.SC_NOT_FOUND,
-            InternalServerErrorException.class, HttpServletResponse.SC_INTERNAL_SERVER_ERROR
-    );
+                    BadRequestException.class, HttpServletResponse.SC_BAD_REQUEST,
+                    NotFoundException.class, HttpServletResponse.SC_NOT_FOUND,
+                    InternalServerErrorException.class, HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+            );
 
     protected abstract void handleGet(HttpServletRequest req, HttpServletResponse resp);
 
@@ -33,32 +33,35 @@ public abstract class BaseServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         handleGet(req, resp);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         handleDelete(req, resp);
     }
 
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) {
         handlePost(req, resp);
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) {
+    public void service(HttpServletRequest req, HttpServletResponse resp) {
         try {
             super.service(req, resp);
         } catch (Exception ex) {
             Integer status = EXCEPTIONS_AND_STATUS_MAP.get(ex.getClass());
-            logger.error(ex.getMessage(), ex);
-            if (status != null) {
-                handleException(resp, status, ex.getMessage());
-            } else {
+            if (status == null) {
                 handleException(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error");
+                logger.error(ex.getMessage(), ex);
+            } else {
+                handleException(resp, status, ex.getMessage());
+                if (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
+                    logger.error(ex.getMessage(), ex);
+                }
             }
         }
     }

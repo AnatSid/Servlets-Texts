@@ -1,17 +1,17 @@
 package org.example.servletsHomework.dao;
 
-import org.example.servletsHomework.model.Texts;
+import org.example.servletsHomework.model.Text;
 
 import java.util.List;
 
 
 public interface TextDao {
 
-    boolean add(Long userId, Texts text);
+    boolean add(Long userId, Text text);
 
-    Texts getTextById(Long userId, Long textId);
+    Text getTextById(Long userId, Long textId);
 
-    List<Texts> getAllTexts(Long userId);
+    List<Text> getAllTexts(Long userId);
 
     void delete(Long userId, Long textId);
 

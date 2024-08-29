@@ -11,11 +11,11 @@ import org.example.servletsHomework.storage.TokensAndUserStorage;
 
 import java.io.IOException;
 
-public class TextFilterIfUserExist extends HttpFilter {
+public class TokenAuthenticationFilter extends HttpFilter {
 
     private final TokensAndUserStorage tokensAndUserStorage;
 
-    public TextFilterIfUserExist(TokensAndUserStorage tokensAndUserStorage) {
+    public TokenAuthenticationFilter(TokensAndUserStorage tokensAndUserStorage) {
         this.tokensAndUserStorage = tokensAndUserStorage;
     }
 
@@ -25,17 +25,24 @@ public class TextFilterIfUserExist extends HttpFilter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        String token = request.getHeader("token");
-
-        if (token == null || !tokensAndUserStorage.ifTokenExists(token)){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("FilterIfTokenExist: Токена/пользователя не существует. Надо регистрация\n");
-
-        } else {
-            response.getWriter().write("FilterIfTokenExist: токен есть - далее проверка на валидность токена\n");
+        String path = request.getRequestURI();
+        if (path.equals("/register") || path.equals("/login")) {
             chain.doFilter(req, res);
+            return;
         }
 
-    }
+        String token = request.getHeader("token");
 
+        if (token == null || !tokensAndUserStorage.isTokenExists(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token does not exist. Need registration.\n");
+        } else if (!tokensAndUserStorage.isTokenValid(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token expired. Need to log in.\n");
+        } else {
+            Long userId = tokensAndUserStorage.getUserIdByToken(token);
+            request.setAttribute("userId", userId);
+            chain.doFilter(req, res);
+        }
+    }
 }

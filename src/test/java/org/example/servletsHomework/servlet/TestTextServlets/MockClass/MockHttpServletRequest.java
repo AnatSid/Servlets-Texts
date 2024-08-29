@@ -15,8 +15,19 @@ public class MockHttpServletRequest implements HttpServletRequest {
     private String pathInfo;
     private Map<String, String> headers = new HashMap<>();
     private BufferedReader bufferedReader;
+    private Long attribute;
 
-    public void setBufferedReader(BufferedReader bufferedReader){
+    @Override
+    public Object getAttribute(String name) {
+        return attribute;
+    }
+
+    @Override
+    public void setAttribute(String name, Object o) {
+        attribute = (Long) o;
+    }
+
+    public void setBufferedReader(BufferedReader bufferedReader) {
         this.bufferedReader = bufferedReader;
     }
 
@@ -193,10 +204,6 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public Object getAttribute(String name) {
-        return null;
-    }
 
     @Override
     public Enumeration<String> getAttributeNames() {
@@ -284,10 +291,6 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return "";
     }
 
-    @Override
-    public void setAttribute(String name, Object o) {
-
-    }
 
     @Override
     public void removeAttribute(String name) {

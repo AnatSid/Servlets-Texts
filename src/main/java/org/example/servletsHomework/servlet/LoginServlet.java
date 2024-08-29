@@ -22,17 +22,13 @@ public class LoginServlet extends HttpServlet {
 
         String oldToken = req.getHeader("token");
 
-        if (tokensAndUserStorage.ifTokenExists(oldToken)) {
+        if (tokensAndUserStorage.isTokenExists(oldToken)) {
 
             String newToken = tokensAndUserStorage.generateToken();
-            User oldUser = tokensAndUserStorage.removeToken(oldToken);
-            User newUser = new User(
-                    oldUser.getUsername(),
-                    oldUser.getPassword(),
-                    oldUser.getId(),
-                    System.currentTimeMillis());
+            User currentUser = tokensAndUserStorage.removeToken(oldToken);
+            currentUser.setLastLoginTime(System.currentTimeMillis());
 
-            tokensAndUserStorage.addToken(newToken, newUser);
+            tokensAndUserStorage.addToken(newToken, currentUser);
 
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
             resp.getWriter().write("LoginServlet: new token: " + newToken);

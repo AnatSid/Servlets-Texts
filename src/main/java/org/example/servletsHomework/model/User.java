@@ -5,17 +5,21 @@ public class User {
     private long id;
     private String username;
     private String password;
-    long creationTime;
+    private long lastLoginTime;
 
-    public User(String username, String password, long id, long creationTime) {
+    public User(String username, String password, long id, long lastLoginTime) {
         this.username = username;
         this.password = password;
         this.id = id;
-        this.creationTime = creationTime;
+        this.lastLoginTime = lastLoginTime;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -34,11 +38,11 @@ public class User {
         this.id = id;
     }
 
-    public long getCreationTime() {
-        return creationTime;
+    public long getLastLoginTime() {
+        return lastLoginTime;
     }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
+    public void setLastLoginTime(long lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 }

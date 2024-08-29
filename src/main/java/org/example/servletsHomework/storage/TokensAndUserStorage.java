@@ -1,5 +1,6 @@
 package org.example.servletsHomework.storage;
 
+import org.example.servletsHomework.exception.NotFoundException;
 import org.example.servletsHomework.model.User;
 
 import java.util.*;
@@ -13,30 +14,30 @@ public class TokensAndUserStorage {
     private long idCounter = 1;
 
     public User createNewUser(String username, String password) {
-        return new User(username, password, idCounter++, 0);
+        return new User(username, password, idCounter++, System.currentTimeMillis());
     }
 
-    public boolean ifUserExists(String username) {
+    public boolean isUserExists(String username) {
         return tokenAndUserMap.values().stream()
                 .anyMatch(user -> user.getUsername().equals(username));
     }
 
     public void addToken(String token, User user) {
-        if (ifTokenExists(token)) {
+        if (isTokenExists(token)) {
             return;
         }
         tokenAndUserMap.put(token, user);
     }
 
     public boolean isTokenValid(String token) {
-        if (!ifTokenExists(token)) {
+        if (!isTokenExists(token)) {
             return false;
         } else {
             User user = tokenAndUserMap.get(token);
             if (user == null)
                 return false;
 
-            Long creationTime = user.getCreationTime();
+            Long creationTime = user.getLastLoginTime();
             long currentTime = System.currentTimeMillis();
 
             if (creationTime == null)
@@ -51,7 +52,7 @@ public class TokensAndUserStorage {
         return tokenAndUserMap.remove(token);
     }
 
-    public boolean ifTokenExists(String token) {
+    public boolean isTokenExists(String token) {
         return tokenAndUserMap.containsKey(token);
     }
 
@@ -60,7 +61,11 @@ public class TokensAndUserStorage {
     }
 
     public long getUserIdByToken(String token) {
-        return tokenAndUserMap.get(token).getId();
+        User user = tokenAndUserMap.get(token);
+        if (user==null){
+            throw new NotFoundException("No user found for the given token");
+        }
+        return user.getId();
     }
 
 }

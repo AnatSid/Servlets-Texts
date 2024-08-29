@@ -2,10 +2,7 @@ package org.example.servletsHomework.servlet.TestTextServlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.servletsHomework.dao.TextDao;
-import org.example.servletsHomework.exception.BadRequestException;
-import org.example.servletsHomework.exception.NotFoundException;
-import org.example.servletsHomework.model.Texts;
+import org.example.servletsHomework.model.Text;
 import org.example.servletsHomework.model.User;
 import org.example.servletsHomework.service.TextService;
 import org.example.servletsHomework.servlet.TestTextServlets.MockClass.*;
@@ -22,8 +19,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class TextsServletTest {
+class TextServletTest {
     private TextsServlet textsServlet;
+    private MockTextDao textDao;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private MockPrintWriter writer;
@@ -32,125 +30,124 @@ class TextsServletTest {
     @BeforeEach
     void setUp() {
 
-        TextDao textDao = new MockTextDao2();
+        textDao = new MockTextDao();
         TextService textService = new TextService(textDao);
         TokensAndUserStorage tokensAndUserStorage = new TokensAndUserStorage();
-        textsServlet = new TextsServlet(new ObjectMapper(), new MockIdGenerator(1L), textService, tokensAndUserStorage);
+        textsServlet = new TextsServlet(new ObjectMapper(), new MockIdGenerator(1L), textService);
         writer = new MockPrintWriter(new StringWriter());
 
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse(writer);
 
         String tokenUserOne = "validToken1";
-        String tokenUserTwo = "validToken2";
-
         User userOne = new User("testUsername1", "testPassword1", 1L, System.currentTimeMillis());
-        User userTwo = new User("testUsername2", "testPassword2", 2L, System.currentTimeMillis());
-
         tokensAndUserStorage.addToken(tokenUserOne, userOne);
-        tokensAndUserStorage.addToken(tokenUserTwo, userTwo);
 
-        textService.addText(1L, new Texts(1L, "text1"));
-        textService.addText(2L, new Texts(1L, "text3"));
+        textService.addText(1L, new Text(1L, "text1", 1L));
+
     }
 
     @Test
     void shouldReturnAllTexts() {
 
-        request.setHeaders("token", "validToken1");
+        request.setAttribute("userId", 1L);
         request.setMethod("GET");
         request.setPathInfo("/");
 
         textsServlet.handleGet(request, response);
 
-        Integer expectedStatus = 200;
-        String expectedOutput = "[[Texts{id=1, value='Test'}]]";
+        String expectedOutput = "[Text{textId=1, value='Test', userId=1}]";
 
-        assertEquals(expectedOutput, writer.writtenStrings.toString());
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(expectedOutput, writer.writtenStrings.get(0));
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertTrue(textDao.isGetAllCalled());
     }
+
 
     @Test
     void shouldReturnTextById() {
 
-        request.setHeaders("token", "validToken1");
         request.setMethod("GET");
         request.setPathInfo("/1");
 
         textsServlet.handleGet(request, response);
 
-        Integer expectedStatus = 200;
-        String expectedOutput = "[Text with id 1: TestText]";
+        String expectedOutput = "Text with id 1: TestText";
 
-        assertEquals(expectedOutput, writer.writtenStrings.toString());
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(expectedOutput, writer.writtenStrings.get(0));
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertTrue(textDao.isGetByIdCalled());
     }
 
 
     @Test
-    void shouldThrowBadRequestExceptionWhenRequestWithInvalidId() {
+    void shouldReturnBadRequestStatusWhenRequestWithInvalidId() {
 
-        request.setHeaders("token", "validToken1");
         request.setMethod("GET");
 
         List<String> invalidPaths = List.of("/a", "/ ", "/!", "%", "1/2/3/");
 
         for (String path : invalidPaths) {
             request.setPathInfo(path);
-            BadRequestException exception = assertThrows(BadRequestException.class, () -> textsServlet.handleGet(request, response));
+            textsServlet.service(request, response);
+
             String expectedMessage = "Invalid request path: " + path;
-            assertEquals(expectedMessage, exception.getMessage());
+
+            assertEquals(expectedMessage, writer.writtenStrings.get(0));
+            assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+            assertFalse(textDao.isGetByIdCalled());
+
+            writer.writtenStrings.clear();
         }
     }
 
     @Test
-    void shouldThrowNotFoundExceptionWhenTextByIdIsNotExist() {
+    void shouldReturnNotFoundStatusWhenTextIdDoesNotExist() {
 
         String id = "44";
-        request.setHeaders("token", "validToken1");
         request.setMethod("GET");
         request.setPathInfo("/" + id);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> textsServlet.handleGet(request, response));
+        textsServlet.service(request, response);
 
         String expectedMessage = "Text not found with id " + id;
-        assertEquals(expectedMessage, exception.getMessage());
+        assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+        assertEquals(expectedMessage, writer.writtenStrings.get(0));
+        assertTrue(textDao.isGetByIdCalled());
     }
 
     @Test
     void shouldDeleteAllTexts() {
-        request.setHeaders("token", "validToken1");
+
         request.setMethod("DELETE");
         request.setPathInfo("/deleteAll");
 
         textsServlet.handleDelete(request, response);
 
-        Integer expectedStatus = 200;
-        String expectedOutput = "[All text has been deleted]";
+        String expectedOutput = "All text has been deleted";
 
-        assertEquals(expectedStatus, response.getStatus());
-        assertEquals(expectedOutput, writer.writtenStrings.toString());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(expectedOutput, writer.writtenStrings.get(0));
+        assertTrue(textDao.isDeleteAllCalled());
     }
 
     @Test
     void shouldDeleteTextById() {
 
-        request.setHeaders("token", "validToken1");
         request.setMethod("DELETE");
         request.setPathInfo("/1");
 
         textsServlet.handleDelete(request, response);
 
-        Integer expectedStatus = 200;
-        String expectedOutput = "[Text: TestText with id: 1 has been deleted]";
+        String expectedOutput = "Text with id: 1 has been deleted";
 
-        assertEquals(expectedOutput, writer.writtenStrings.toString());
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(expectedOutput, writer.writtenStrings.get(0));
+        assertTrue(textDao.isDeleteCalled());
     }
 
-    //todo:  shouldReturnCreatedResponseForValidTextPost
     @Test
-    void shouldPostText() {
+    void shouldPostTextAndReturnSuccessResponse() {
 
         String jsonRequest = """
                 {
@@ -158,46 +155,38 @@ class TextsServletTest {
                 }
                 """;
 
-
-        request.setHeaders("token", "validToken1");
         request.setMethod("POST");
         BufferedReader reader = new BufferedReader(new StringReader(jsonRequest));
         request.setBufferedReader(reader);
-
-        response = new MockHttpServletResponse(writer);
 
         textsServlet.handlePost(request, response);
 
-        Integer expectedStatus = HttpServletResponse.SC_CREATED;
         String expectedOutput = "{\"text\":\"TestText123\",\"message\":\"Text saved with id: 1\",\"textId\":1}";
 
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         assertEquals(expectedOutput, writer.writtenStrings.get(0));
-
+        assertTrue(textDao.isAddCalled());
     }
 
-    //todo:: whenRequestHasInvalidTextMessage
     @Test
-    void shouldThrowBadRequestExceptionWhenRequestWithEmptyBody() {
+    void shouldReturnBadRequestStatusWhenRequestWithEmptyBody() {
 
         String jsonRequest = """
                 {
-                "text": " "
+                "text": ""
                 }
                 """;
 
-        request = new MockHttpServletRequest();
-        request.setHeaders("token", "validToken1");
         request.setMethod("POST");
         BufferedReader reader = new BufferedReader(new StringReader(jsonRequest));
         request.setBufferedReader(reader);
 
-        response = new MockHttpServletResponse(writer);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> textsServlet.handlePost(request, response));
+        textsServlet.service(request, response);
 
         String expectedOutput = "Text cannot be empty";
-        assertEquals(expectedOutput, exception.getMessage());
+
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        assertEquals(expectedOutput, writer.writtenStrings.get(0));
     }
 
 }

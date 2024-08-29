@@ -22,18 +22,17 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getHeader("username");
         String password = request.getHeader("password");
 
-        if (tokensAndUserStorage.ifUserExists(username)) {
+        if (tokensAndUserStorage.isUserExists(username)) {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
-            response.getWriter().write("RegisterServlet2: username already exists. Need log in");
+            response.getWriter().write("RegisterServlet: username already exists. Need log in");
 
         } else {
             User newUser = tokensAndUserStorage.createNewUser(username, password);
             String newToken = tokensAndUserStorage.generateToken();
-            newUser.setCreationTime(System.currentTimeMillis());
 
             tokensAndUserStorage.addToken(newToken, newUser);
-            response.setStatus(HttpServletResponse.SC_CREATED);
 
+            response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write(
                     "Registration successful.\n" +
                             "Your login: " + username + "\n" +
