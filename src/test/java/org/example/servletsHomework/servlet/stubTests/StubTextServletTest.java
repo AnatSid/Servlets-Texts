@@ -1,11 +1,11 @@
-package org.example.servletsHomework.servlet.TestTextServlets;
+package org.example.servletsHomework.servlet.stubTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.servletsHomework.model.Text;
 import org.example.servletsHomework.model.User;
 import org.example.servletsHomework.service.TextService;
-import org.example.servletsHomework.servlet.TestTextServlets.MockClass.*;
+import org.example.servletsHomework.servlet.stubTests.stubClass.*;
 import org.example.servletsHomework.servlet.TextsServlet;
 import org.example.servletsHomework.storage.TokensAndUserStorage;
 
@@ -19,25 +19,25 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class TextServletTest {
+class StubTextServletTest {
     private TextsServlet textsServlet;
-    private MockTextDao textDao;
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private MockPrintWriter writer;
+    private StubTextDao textDao;
+    private StubHttpServletRequest request;
+    private StubHttpServletResponse response;
+    private StubPrintWriter writer;
 
 
     @BeforeEach
     void setUp() {
 
-        textDao = new MockTextDao();
+        textDao = new StubTextDao();
         TextService textService = new TextService(textDao);
         TokensAndUserStorage tokensAndUserStorage = new TokensAndUserStorage();
-        textsServlet = new TextsServlet(new ObjectMapper(), new MockIdGenerator(1L), textService);
-        writer = new MockPrintWriter(new StringWriter());
+        textsServlet = new TextsServlet(new ObjectMapper(), new StubIdGenerator(1L), textService);
+        writer = new StubPrintWriter(new StringWriter());
 
-        request = new MockHttpServletRequest();
-        response = new MockHttpServletResponse(writer);
+        request = new StubHttpServletRequest();
+        response = new StubHttpServletResponse(writer);
 
         String tokenUserOne = "validToken1";
         User userOne = new User("testUsername1", "testPassword1", 1L, System.currentTimeMillis());

@@ -1,11 +1,9 @@
-package org.example.servletsHomework.handler;
+package org.example.servletsHomework.dto;
 
 public class TextCreateResponse {
     private String text;
     private String message;
     private long textId;
-
-
 
     public void setText(String text) {
         this.text = text;

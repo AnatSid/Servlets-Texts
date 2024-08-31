@@ -1,10 +1,10 @@
-package org.example.servletsHomework.servlet.Mockito.test;
+package org.example.servletsHomework.servlet.mockitoTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.servletsHomework.dao.TextDao;
-import org.example.servletsHomework.model.IdGenerator;
+import org.example.servletsHomework.service.IdGenerator;
 import org.example.servletsHomework.model.Text;
 import org.example.servletsHomework.service.TextService;
 import org.example.servletsHomework.servlet.TextsServlet;
@@ -31,13 +31,7 @@ public class MockitoTextServletTest {
 
     @BeforeEach
     void setUp() {
-        Long totalStart = System.currentTimeMillis();
-        Long start = System.currentTimeMillis();
-
         textDao = Mockito.mock(TextDao.class);
-        Long afterTextDao = System.currentTimeMillis();
-        System.out.println("Время на настройку textDao: " + (afterTextDao - start) + " ms");
-
         textService = new TextService(textDao);
         idGenerator = Mockito.mock(IdGenerator.class);
         textsServlet = new TextsServlet(new ObjectMapper(), idGenerator, textService);
@@ -47,8 +41,6 @@ public class MockitoTextServletTest {
         stringWriter = new StringWriter();
         writer = new PrintWriter(stringWriter);
 
-        Long totalEnd = System.currentTimeMillis();
-        System.out.println("Общее время на setUp: " + (totalEnd - totalStart) + " ms");
     }
 
 
@@ -71,6 +63,26 @@ public class MockitoTextServletTest {
         String expectedOutput = "[Text{textId=1, value='TestText', userId=1}, Text{textId=2, value='TestText2', userId=1}]";
         assertEquals(expectedOutput, stringWriter.toString());
         verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
+    void shouldReturnEmptyList() throws IOException {
+
+        Long userId = 1L;
+
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getPathInfo()).thenReturn("/");
+        when(request.getAttribute("userId")).thenReturn(userId);
+
+        when(textDao.getAllTexts(userId)).thenReturn(List.of());
+        when(response.getWriter()).thenReturn(writer);
+
+        textsServlet.handleGet(request, response);
+
+        String expectedOutput = "[]";
+        assertEquals(expectedOutput, stringWriter.toString());
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        verify(textDao).getAllTexts(userId);
     }
 
     @Test
@@ -98,15 +110,14 @@ public class MockitoTextServletTest {
 
     @Test
     void shouldReturnBadRequestStatusWhenRequestWithInvalidId() throws IOException {
+
         List<String> invalidPaths = List.of("/a", "/!", "/@@", "1/2/3/");
         Long userId = 1L;
 
         for (String path : invalidPaths) {
-            stringWriter = new StringWriter();
-            writer = new PrintWriter(stringWriter);
 
-            when(response.getWriter()).thenReturn(writer);
-
+            PrintWriter mockWriter = Mockito.mock(PrintWriter.class);
+            when(response.getWriter()).thenReturn(mockWriter);
             when(request.getMethod()).thenReturn("GET");
             when(request.getAttribute("userId")).thenReturn(userId);
             when(request.getPathInfo()).thenReturn(path);
@@ -114,12 +125,14 @@ public class MockitoTextServletTest {
             textsServlet.service(request, response);
 
             String expectedMessage = "Invalid request path: " + path;
-            assertEquals(expectedMessage, stringWriter.toString().trim());
-            verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
+            verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            verify(mockWriter).write(expectedMessage);
             reset(response);
+
         }
     }
+
 
     @Test
     void shouldDeleteAllTexts() throws Exception {

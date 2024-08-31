@@ -28,7 +28,7 @@ public class TextService {
 
     public List<Text> getAllTexts(Long userId) {
         return Optional.ofNullable(textDao.getAllTexts(userId))
-                .orElseThrow(() -> new NotFoundException("No texts found for user with ID: " + userId));
+                .orElse(List.of());
     }
 
     public void deleteTextById(Long userId, Long textId) {

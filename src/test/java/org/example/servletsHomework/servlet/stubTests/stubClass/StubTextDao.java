@@ -1,4 +1,4 @@
-package org.example.servletsHomework.servlet.TestTextServlets.MockClass;
+package org.example.servletsHomework.servlet.stubTests.stubClass;
 
 import org.example.servletsHomework.dao.TextDao;
 import org.example.servletsHomework.model.Text;
@@ -6,7 +6,7 @@ import org.example.servletsHomework.model.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockTextDao implements TextDao {
+public class StubTextDao implements TextDao {
 
     private boolean addCalled = false;
     private boolean deleteCalled = false;

@@ -1,4 +1,4 @@
-package org.example.servletsHomework.handler;
+package org.example.servletsHomework.dto;
 
 public class TextCreateRequest {
 

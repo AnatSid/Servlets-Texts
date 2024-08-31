@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.servletsHomework.exception.BadRequestException;
 import org.example.servletsHomework.exception.InternalServerErrorException;
 
-import org.example.servletsHomework.handler.TextCreateRequest;
-import org.example.servletsHomework.handler.TextCreateResponse;
-import org.example.servletsHomework.model.IdGenerator;
+import org.example.servletsHomework.dto.TextCreateRequest;
+import org.example.servletsHomework.dto.TextCreateResponse;
+import org.example.servletsHomework.service.IdGenerator;
 import org.example.servletsHomework.model.Text;
 import org.example.servletsHomework.service.TextService;
 

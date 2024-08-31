@@ -66,7 +66,7 @@ public abstract class BaseServlet extends HttpServlet {
         }
     }
 
-    protected void handleException(HttpServletResponse resp, int status, String message) {
+    public void handleException(HttpServletResponse resp, int status, String message) {
         resp.setContentType("text/plain");
         try {
             resp.setStatus(status);

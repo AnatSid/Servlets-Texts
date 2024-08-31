@@ -1,14 +1,14 @@
-package org.example.servletsHomework.servlet.TestTextServlets.MockClass;
+package org.example.servletsHomework.servlet.stubTests.stubClass;
 
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockPrintWriter extends PrintWriter {
+public class StubPrintWriter extends PrintWriter {
     public List<String> writtenStrings = new ArrayList<>();
 
-    public MockPrintWriter(Writer out) {
+    public StubPrintWriter(Writer out) {
         super(out);
     }
 

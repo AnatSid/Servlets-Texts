@@ -33,11 +33,7 @@ public class RegisterServlet extends HttpServlet {
             tokensAndUserStorage.addToken(newToken, newUser);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(
-                    "Registration successful.\n" +
-                            "Your login: " + username + "\n" +
-                            "Your password: " + password + "\n" +
-                            "You token: " + newToken);
+            response.getWriter().write(newToken);
         }
     }
 }

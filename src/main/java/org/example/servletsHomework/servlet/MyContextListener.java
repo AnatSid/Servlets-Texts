@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import org.example.servletsHomework.dao.TextDao;
 import org.example.servletsHomework.dao.HashMapTextDao;
 import org.example.servletsHomework.filters.TokenAuthenticationFilter;
-import org.example.servletsHomework.model.IdGenerator;
-import org.example.servletsHomework.model.RealIdGenerator;
+import org.example.servletsHomework.service.IdGenerator;
+import org.example.servletsHomework.service.InMemoryIdGenerator;
 import org.example.servletsHomework.service.TextService;
 import org.example.servletsHomework.storage.TokensAndUserStorage;
 
@@ -25,7 +25,7 @@ public class MyContextListener implements ServletContextListener {
         ServletContext servletContext = sce.getServletContext();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        IdGenerator idGenerator = new RealIdGenerator();
+        IdGenerator idGenerator = new InMemoryIdGenerator();
         TextDao textDao = new HashMapTextDao();
         TextService textService = new TextService(textDao);
         TokensAndUserStorage tokensAndUserStorage = new TokensAndUserStorage();

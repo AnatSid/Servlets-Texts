@@ -1,4 +1,4 @@
-package org.example.servletsHomework.servlet.TestTextServlets.MockClass;
+package org.example.servletsHomework.servlet.stubTests.stubClass;
 
 
 import jakarta.servlet.ServletOutputStream;
@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class MockHttpServletResponse implements HttpServletResponse {
+public class StubHttpServletResponse implements HttpServletResponse {
 
-    private final MockPrintWriter writer;
+    private final StubPrintWriter writer;
     private int status;
 
 
-    public MockHttpServletResponse(MockPrintWriter writer) {
+    public StubHttpServletResponse(StubPrintWriter writer) {
         this.writer = writer;
     }
 

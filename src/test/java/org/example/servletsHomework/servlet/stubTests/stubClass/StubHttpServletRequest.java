@@ -1,4 +1,4 @@
-package org.example.servletsHomework.servlet.TestTextServlets.MockClass;
+package org.example.servletsHomework.servlet.stubTests.stubClass;
 
 
 import jakarta.servlet.*;
@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.*;
 
-public class MockHttpServletRequest implements HttpServletRequest {
+public class StubHttpServletRequest implements HttpServletRequest {
     private String method;
     private String pathInfo;
     private Map<String, String> headers = new HashMap<>();
