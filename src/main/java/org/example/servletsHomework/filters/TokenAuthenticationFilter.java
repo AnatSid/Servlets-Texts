@@ -35,10 +35,10 @@ public class TokenAuthenticationFilter extends HttpFilter {
 
         if (token == null || !tokensAndUserStorage.isTokenExists(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token does not exist. Need registration.\n");
+            response.getWriter().write("Token does not exist. Need registration");
         } else if (!tokensAndUserStorage.isTokenValid(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token expired. Need to log in.\n");
+            response.getWriter().write("Token expired. Need to log in");
         } else {
             Long userId = tokensAndUserStorage.getUserIdByToken(token);
             request.setAttribute("userId", userId);
