@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
             tokensAndUserStorage.addToken(newToken, currentUser);
 
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-            resp.getWriter().write("LoginServlet: new token: " + newToken);
+            resp.getWriter().write(newToken);
 
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

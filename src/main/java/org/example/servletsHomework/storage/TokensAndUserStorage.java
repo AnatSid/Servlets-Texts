@@ -9,7 +9,7 @@ public class TokensAndUserStorage {
 
     private final Map<String, User> tokenAndUserMap = new HashMap<>();
 
-    private static final long TOKEN_LIFETIME = 3L * 60 * 1000;
+    private static final long TOKEN_LIFETIME = 5L * 1000;
 
     private long idCounter = 1;
 
@@ -62,7 +62,7 @@ public class TokensAndUserStorage {
 
     public long getUserIdByToken(String token) {
         User user = tokenAndUserMap.get(token);
-        if (user==null){
+        if (user == null) {
             throw new NotFoundException("No user found for the given token");
         }
         return user.getId();
