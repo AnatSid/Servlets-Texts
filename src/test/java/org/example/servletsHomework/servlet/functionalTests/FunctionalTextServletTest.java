@@ -180,7 +180,7 @@ public class FunctionalTextServletTest {
 
             String jsonRequest = """
                     {
-                    "taext": "TestText123"
+                    "text": "TestText123"
                     }
                     """;
 
@@ -193,9 +193,10 @@ public class FunctionalTextServletTest {
                         .build();
 
                 HttpResponse<String> responsePost = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
+
                 if (responsePost.statusCode() != HttpServletResponse.SC_CREATED) {
                     logger.error(String.format("Test Group: %s, Test: %s, Status: %d, Response: %s",
-                            DemoFunctionalTest.DemoTestsRequiringPostedText.class.getName(),
+                            TestsRequiringPostedText.class.getName(),
                             "setUpPostedTexts()",
                             responsePost.statusCode(),
                             responsePost.body()));
