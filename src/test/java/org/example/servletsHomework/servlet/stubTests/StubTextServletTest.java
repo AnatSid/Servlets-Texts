@@ -149,11 +149,9 @@ class StubTextServletTest {
     @Test
     void shouldPostTextAndReturnSuccessResponse() {
 
-        String jsonRequest = """
-                {
-                "text": "TestText123"
-                }
-                """;
+        String jsonRequest = "{\n" +
+                "\"text\": \"TestText123\"\n" +
+                "}";
 
         request.setMethod("POST");
         BufferedReader reader = new BufferedReader(new StringReader(jsonRequest));
@@ -171,11 +169,9 @@ class StubTextServletTest {
     @Test
     void shouldReturnBadRequestStatusWhenRequestWithEmptyBody() {
 
-        String jsonRequest = """
-                {
-                "text": ""
-                }
-                """;
+        String jsonRequest = "{\n" +
+                "\"text\": \"\"\n" +
+                "}";
 
         request.setMethod("POST");
         BufferedReader reader = new BufferedReader(new StringReader(jsonRequest));

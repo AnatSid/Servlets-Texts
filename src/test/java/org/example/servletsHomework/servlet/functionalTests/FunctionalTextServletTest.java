@@ -171,18 +171,16 @@ public class FunctionalTextServletTest {
     @Nested
     class TestsRequiringPostedText {
 
-        private static final Logger logger = LoggerFactory.getLogger(TestsRequiringPostedText.class.getName());
+        private  final Logger logger = LoggerFactory.getLogger(TestsRequiringPostedText.class.getName());
         String textId;
         List<String> actualId = new ArrayList<>();
 
         @BeforeEach()
         void setUpPostedTexts() throws URISyntaxException, IOException, InterruptedException {
 
-            String jsonRequest = """
-                    {
-                    "text": "TestText123"
-                    }
-                    """;
+            String jsonRequest = "{\n" +
+                    "\"text\": \"TestText123\"\n" +
+                    "}";
 
             for (int i = 0; i < 3; i++) {
                 HttpRequest requestPost = HttpRequest.newBuilder()
