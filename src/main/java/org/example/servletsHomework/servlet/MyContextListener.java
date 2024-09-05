@@ -5,8 +5,9 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServlet;
+import org.example.servletsHomework.SpringConfig;
 import org.example.servletsHomework.filters.TokenAuthenticationFilter;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.EnumSet;
 
@@ -18,7 +19,7 @@ public class MyContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         ServletContext servletContext = sce.getServletContext();
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
 
         HttpFilter tokenAuthenticationFilter = context.getBean(TokenAuthenticationFilter.class);
         HttpServlet registerServlet = context.getBean(RegisterServlet.class);
