@@ -15,6 +15,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
         <junit.version>5.10.0</junit.version>
+        <spring.version>5.3.31</spring.version>
     </properties>
 
     <dependencies>
@@ -82,15 +83,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>5.3.31</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.3.31</version>
+            <version>${spring.version}</version>
         </dependency>
-
 
     </dependencies>
 
