@@ -42,10 +42,8 @@ public class Text {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Text text)) return false;
-        return Objects.equals(textId, text.textId) && Objects.equals(value, text.value) && Objects.equals(userId, text.userId);
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 
     @Override

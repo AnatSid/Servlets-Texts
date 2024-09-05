@@ -180,11 +180,9 @@ public class MockitoTextServletTest {
         Long textId = 1L;
         Text text = new Text(textId, "TestText123", userId);
 
-        String jsonRequest = """
-                {
-                "text": "TestText123"
-                }
-                """;
+        String jsonRequest = "{\n" +
+                "\"text\": \"TestText123\"\n" +
+                "}";
 
         when(request.getAttribute("userId")).thenReturn(userId);
         when(request.getMethod()).thenReturn("POST");
@@ -205,11 +203,9 @@ public class MockitoTextServletTest {
     @Test
     void shouldReturnBadRequestStatusWhenRequestWithEmptyBody() throws IOException {
 
-        String jsonRequest = """
-                {
-                "text": ""
-                }
-                """;
+        String jsonRequest = "{\n" +
+                "\"text\": \"\"\n" +
+                "}";
 
         when(request.getAttribute("userId")).thenReturn(1L);
         when(request.getMethod()).thenReturn("POST");
