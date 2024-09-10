@@ -1,13 +1,15 @@
 package org.example.servletsHomework.dao;
 
 import org.example.servletsHomework.model.Text;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+
+@Component
 public class HashMapTextDao implements TextDao {
 
     private static final Map<Long, List<Text>> map = new HashMap<>();
@@ -36,7 +38,7 @@ public class HashMapTextDao implements TextDao {
     public void delete(Long userId, Long textId) {
         map.computeIfPresent(userId, (id, texts) -> texts.stream()
                 .filter(text -> !text.getTextId().equals(textId))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
 

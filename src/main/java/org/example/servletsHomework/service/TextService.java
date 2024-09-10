@@ -4,14 +4,18 @@ package org.example.servletsHomework.service;
 import org.example.servletsHomework.dao.TextDao;
 import org.example.servletsHomework.exception.NotFoundException;
 import org.example.servletsHomework.model.Text;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class TextService {
 
     private final TextDao textDao;
 
+    @Autowired
     public TextService(TextDao textDao) {
         this.textDao = textDao;
     }

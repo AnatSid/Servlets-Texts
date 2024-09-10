@@ -118,7 +118,7 @@ public class FunctionalTextServletTest {
         long textId = 100L;
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(fullTextUrl + "/" + textId))
+                .uri(new URI(fullTextUrl + textId))
                 .GET()
                 .header("token", token)
                 .build();
@@ -133,7 +133,7 @@ public class FunctionalTextServletTest {
     @Test
     void shouldReturnBadRequestWhenInvalidPath() throws URISyntaxException, IOException, InterruptedException {
 
-        List<String> invalidPaths = List.of("/afds", "/!", "/@@", "/1/2/3/");
+        List<String> invalidPaths = List.of("afds", "!", "@@", "*");
 
         for (String path : invalidPaths) {
             HttpRequest request = HttpRequest.newBuilder()
@@ -171,7 +171,7 @@ public class FunctionalTextServletTest {
     @Nested
     class TestsRequiringPostedText {
 
-        private  final Logger logger = LoggerFactory.getLogger(TestsRequiringPostedText.class.getName());
+        private final Logger logger = LoggerFactory.getLogger(TestsRequiringPostedText.class.getName());
         String textId;
         List<String> actualId = new ArrayList<>();
 
@@ -273,7 +273,7 @@ public class FunctionalTextServletTest {
         void shouldDeleteAllTexts() throws URISyntaxException, IOException, InterruptedException {
 
             HttpRequest requestDeleteAll = HttpRequest.newBuilder()
-                    .uri(new URI(fullTextUrl + "/deleteAll"))
+                    .uri(new URI(fullTextUrl + "deleteAll"))
                     .DELETE()
                     .header("token", token)
                     .build();

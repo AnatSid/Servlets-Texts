@@ -1,27 +1,29 @@
 package org.example.servletsHomework.filters;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.*;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.servletsHomework.storage.TokensAndUserStorage;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
+
 import java.io.IOException;
 
-public class TokenAuthenticationFilter extends HttpFilter {
+@Component
+public class TokenAuthenticationFilter extends GenericFilterBean {
 
     private final TokensAndUserStorage tokensAndUserStorage;
 
+    @Autowired
     public TokenAuthenticationFilter(TokensAndUserStorage tokensAndUserStorage) {
         this.tokensAndUserStorage = tokensAndUserStorage;
     }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
