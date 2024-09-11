@@ -2,9 +2,11 @@ package org.example.servletsHomework.storage;
 
 import org.example.servletsHomework.exception.NotFoundException;
 import org.example.servletsHomework.model.User;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class TokensAndUserStorage {
 
     private final Map<String, User> tokenAndUserMap = new HashMap<>();
