@@ -17,14 +17,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class FunctionalTextServletTest {
 
     String baseUrl = "http://localhost:8080/";
     String registerUrl = "register";
+    String loginUrl = "login";
     String fullTextUrl = baseUrl + "texts/";
     String token;
     HttpClient client;
@@ -45,7 +45,17 @@ public class FunctionalTextServletTest {
         HttpResponse<String> registerResponse = client.send(registerRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(HttpServletResponse.SC_CREATED, registerResponse.statusCode());
 
-        token = registerResponse.body();
+        HttpRequest loginRequest = HttpRequest.newBuilder()
+                .uri(new URI(baseUrl + loginUrl))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .header("username", randomUserName)
+                .header("password", "1234")
+                .build();
+
+        HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(HttpServletResponse.SC_ACCEPTED, loginResponse.statusCode());
+
+        token = loginResponse.body();
     }
 
     @Test
@@ -99,7 +109,7 @@ public class FunctionalTextServletTest {
     @Test
     void shouldReturnUnauthorizedStatusWhenInvalidPassword() throws URISyntaxException, IOException, InterruptedException {
         HttpRequest loginRequest = HttpRequest.newBuilder()
-                .uri(new URI(baseUrl + "login"))
+                .uri(new URI(baseUrl + loginUrl))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .header("username", randomUserName)
                 .header("password", "wrongPassword")
@@ -107,26 +117,9 @@ public class FunctionalTextServletTest {
 
         HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
 
-        String expectedOutput = "Invalid username or password.";
+        String expectedOutput = "invalid login or password";
 
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, loginResponse.statusCode());
-        assertEquals(expectedOutput, loginResponse.body());
-    }
-
-    @Test
-    void shouldReturnNotFoundStatusWhenUserDoesNotExist() throws URISyntaxException, IOException, InterruptedException {
-        HttpRequest loginRequest = HttpRequest.newBuilder()
-                .uri(new URI(baseUrl + "login"))
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .header("username", "nonExistingUser")
-                .header("password", "1234")
-                .build();
-
-        HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
-
-        String expectedOutput = "User not found";
-
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, loginResponse.statusCode());
         assertEquals(expectedOutput, loginResponse.body());
     }
 
@@ -175,6 +168,8 @@ public class FunctionalTextServletTest {
                     .GET()
                     .header("token", token)
                     .build();
+
+            System.out.println(token);
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

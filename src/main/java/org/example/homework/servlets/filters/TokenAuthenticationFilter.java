@@ -5,7 +5,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.example.homework.servlets.storage.TokensAndUserStorage;
+import org.example.homework.servlets.storage.TokenStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -15,11 +15,11 @@ import java.io.IOException;
 @Component
 public class TokenAuthenticationFilter extends GenericFilterBean {
 
-    private final TokensAndUserStorage tokensAndUserStorage;
+    private final TokenStorage tokenStorage;
 
     @Autowired
-    public TokenAuthenticationFilter(TokensAndUserStorage tokensAndUserStorage) {
-        this.tokensAndUserStorage = tokensAndUserStorage;
+    public TokenAuthenticationFilter(TokenStorage tokenStorage) {
+        this.tokenStorage = tokenStorage;
     }
 
     @Override
@@ -35,14 +35,14 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
 
         String token = request.getHeader("token");
 
-        if (token == null || !tokensAndUserStorage.isTokenExists(token)) {
+        if (token == null || !tokenStorage.isTokenExists(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token does not exist. Need registration");
-        } else if (!tokensAndUserStorage.isTokenValid(token)) {
+        } else if (!tokenStorage.isTokenValid(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token expired. Need to log in");
         } else {
-            Long userId = tokensAndUserStorage.getUserIdByToken(token);
+            Long userId = tokenStorage.getUserIdByToken(token);
             request.setAttribute("userId", userId);
             chain.doFilter(req, res);
         }

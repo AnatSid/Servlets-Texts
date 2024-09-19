@@ -1,4 +1,4 @@
-package org.example.servletsHomework.exception;
+package org.example.homework.servlets.exception;
 
 
 import org.springframework.http.HttpStatus;
